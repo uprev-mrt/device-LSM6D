@@ -10,7 +10,7 @@ uint8_t auto_flag = 0;
 float scaling_factor = LSM6D_CONVERSION_2G;
 mrt_i2c_handle_t I2cHandle;
 
-void lsm6d_init(mrt_i2c_handle_t  handle)
+mrt_status_t lsm6d_init(mrt_i2c_handle_t  handle)
 {
   uint32_t err_code;
   I2cHandle = handle;
@@ -18,12 +18,14 @@ void lsm6d_init(mrt_i2c_handle_t  handle)
 
   lsm6d_write_reg(LSM6D_REG_CTRL3_C, 0x84);// reboot sensor
   MRT_DELAY_MS(100);	//wait for reboot
-  id = lsm6d_read_reg(LSM6D_REG_WHOAMI-1); // make sure multi read is working
+  id = lsm6d_read_reg(LSM6D_REG_WHOAMI); // make sure multi read is working
 
   if(id != LSM6D_ID )
   {
-	 //TODO report com error
+	 return MRT_STATUS_ERROR;
   }
+
+  return MRT_STATUS_OK;
 }
 
 mrt_i2c_status_t lsm6d_set_xl_odr(uint8_t rate)
@@ -65,7 +67,7 @@ mrt_i2c_status_t lsm6d_poll(accel_vector_t* result)
   return status;
 }
 
-mrt_status_t lsm6d_reset_fifo(uint8_t rate)
+void lsm6d_reset_fifo(uint8_t rate)
 {
 	static uint8_t fifo5;
 	lsm6d_write_reg(LSM6D_REG_FIFO_CTRL5, 0);
@@ -74,21 +76,17 @@ mrt_status_t lsm6d_reset_fifo(uint8_t rate)
 	fifo5 = fifo5+6;
 }
 
-void lsm6d_write_reg(uint8_t reg, uint8_t data)
+mrt_i2c_status_t lsm6d_write_reg(uint8_t reg, uint8_t data)
 {
-	if (lsm6d_write_regs(reg,&data,1) != HAL_OK)
-	{
-		MRT_ERROR_HANDLER();
-	}
+	return lsm6d_write_regs(reg,&data,1);
+
 }
 
 uint8_t lsm6d_read_reg(uint8_t reg)
 {
 	uint8_t val;
-	if (lsm6d_read_regs(reg,&val,1) != HAL_OK)
-	{
-		MRT_ERROR_HANDLER();
-	}
+	lsm6d_read_regs(reg,&val,1);
+
 	return val;
 }
 

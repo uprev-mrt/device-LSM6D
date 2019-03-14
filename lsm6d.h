@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "Modules/Platforms/Common/mrt_platform.h"
+#include "Platforms/Common/mrt_platform.h"
 
 #define LSM6D_8BIT_ADDR 0xD4 // 0x30
 #define LSM6D_ID			 0x6A
@@ -75,12 +75,12 @@ typedef struct{
 
 
 
-mrt_i2c_status_t lsm6d_init(mrt_i2c_handle_t handle);
+mrt_status_t lsm6d_init(mrt_i2c_handle_t handle);
 mrt_i2c_status_t lsm6d_set_xl_odr(uint8_t rate);
 mrt_i2c_status_t lsm6d_set_gyro_odr(uint8_t rate);
 mrt_i2c_status_t lsm6d_get_fifo(accel_vector_t* result);
 mrt_i2c_status_t lsm6d_poll(accel_vector_t* result);
-mrt_i2c_status_t lsm6d_reset_fifo(uint8_t rate);
+void lsm6d_reset_fifo(uint8_t rate);
 mrt_i2c_status_t lsm6d_write_reg(uint8_t reg, uint8_t data);
 uint8_t lsm6d_read_reg(uint8_t reg);
 mrt_i2c_status_t lsm6d_write_regs(uint8_t reg, uint8_t* data, uint8_t len);
